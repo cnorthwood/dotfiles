@@ -260,7 +260,7 @@ if [ "`which vagrant`" = "" ]; then
     open "https://www.vagrantup.com/downloads.html"
     read -p "Press Enter to continue" key
 fi
-vagrant plugin install vagrant-vbguest
+vagrant plugin list | grep -q vbguest || vagrant plugin install vagrant-vbguest
 
 # Install Java
 test "`which java`" = "" && brew cask install java
