@@ -179,6 +179,17 @@ fi
 
 /usr/libexec/PlistBuddy ~/Library/Preferences/com.Logitech.Control\ Center.Assignments.registry -c 'Set "Assignments Registry:Actor Properties:Groups:0:Actor Properties:Groups:3:Actor Properties:Action:Actor Identifier" "action.Mission Control"'
 
+# Set up printers
+if [ ! -d "/Library/Printers/hp/Utilities/HP Utility.app" ]; then
+    curl -LO http://support.apple.com/downloads/DL907/en_US/hpprinterdriver3.1.dmg
+    open hpprinterdriver3.1.dmg
+    read -p "Press Enter to continue" key
+fi
+
+if [ "$BBC" = "y" ]; then
+    lpadmin -p "a3c_mcf5" -L "Dock House, 5th Floor" -E -v "lpd://print" -P "/Library/Printers/PPDs/Contents/Resources/HP Color LaserJet CM6040 MFP.gz"
+fi
+
 # Set up Homebrew
 xcode-select --install
 test "`which brew`" = "" && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
