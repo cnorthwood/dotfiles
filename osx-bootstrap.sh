@@ -208,6 +208,9 @@ cat >~/.gitignore <<EOF
 .DS_Store
 EOF
 git config --global core.excludesfile '~/.gitignore'
+git config --global alias.newbranch '!sh -c "git checkout -b \$1 && git branch --set-upstream-to origin/master" -'
+git config --global alias.cleanup '!sh -c "git branch --merged master | grep -v \"\* master\" | xargs -n 1 git branch -d"'
+git config --global pull.rebase true
 
 # Install Dropbox
 if [ ! -d "/Applications/Dropbox.app" ]; then
