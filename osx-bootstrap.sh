@@ -281,6 +281,14 @@ if [ "$BBC" = "y" ]; then
     read -p "Press Enter to continue" key
 fi
 
+# Install Flux
+if [ ! -d "/Applications/Flux.app" ]; then
+    curl -LO https://justgetflux.com/dlmac.html
+    unzip Flux.zip
+    open Flux.app
+    read -p "Press Enter to continue" key
+fi
+
 # From App Store: install Keynote, BetterSnapTool, Xcode, Slack
 echo "Now, install apps from the App Store"
 open "/Applications/App Store.app"
