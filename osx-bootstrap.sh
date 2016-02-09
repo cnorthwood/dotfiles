@@ -8,15 +8,15 @@ echo
 for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
 	defaults write "${domain}" dontAutoLoad -array \
 		"/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
-		"/System/Library/CoreServices/Menu Extras/Volume.menu" \
 		"/System/Library/CoreServices/Menu Extras/User.menu"
 done
 defaults write com.apple.systemuiserver menuExtras -array \
+        "/Applications/Utilities/Keychain Access.app/Contents/Resources/Keychain.menu" \
 	"/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
 	"/System/Library/CoreServices/Menu Extras/AirPort.menu" \
+        "/System/Library/CoreServices/Menu Extras/Volume.menu" \
 	"/System/Library/CoreServices/Menu Extras/Battery.menu" \
-	"/System/Library/CoreServices/Menu Extras/Clock.menu" \
-        "/Applications/Utilities/Keychain Access.app/Contents/Resources/Keychain.menu"
+	"/System/Library/CoreServices/Menu Extras/Clock.menu"
 
 # Position Dock on the left at home due to monitor setup
 if [ "$BBC" = "n" ]; then
@@ -146,9 +146,6 @@ EOF
 
     cat >~/.ssh/config <<EOF
 ProxyCommand ~/.ssh/proxy %h %p
-
-Host localhost
-    ProxyCommand none
 EOF
 
     touch ~/.bash_profile
@@ -218,7 +215,7 @@ if [ ! -d "/Applications/Dropbox.app" ]; then
     echo "Installing Dropbox"
     curl -Lo Dropbox.dmg https://www.dropbox.com/download?plat=mac
     open Dropbox.dmg
-   ead "Press Enter to continue"
+    read -p "Press Enter to continue" key
 fi
 
 # Install KeepassX
