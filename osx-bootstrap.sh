@@ -11,10 +11,10 @@ for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
 		"/System/Library/CoreServices/Menu Extras/User.menu"
 done
 defaults write com.apple.systemuiserver menuExtras -array \
-        "/Applications/Utilities/Keychain Access.app/Contents/Resources/Keychain.menu" \
+    "/Applications/Utilities/Keychain Access.app/Contents/Resources/Keychain.menu" \
 	"/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
 	"/System/Library/CoreServices/Menu Extras/AirPort.menu" \
-        "/System/Library/CoreServices/Menu Extras/Volume.menu" \
+    "/System/Library/CoreServices/Menu Extras/Volume.menu" \
 	"/System/Library/CoreServices/Menu Extras/Battery.menu" \
 	"/System/Library/CoreServices/Menu Extras/Clock.menu"
 
@@ -135,7 +135,7 @@ if [ "$BBC" = "y" ]; then
     cat >~/.ssh/proxy <<EOF
 #!/bin/sh
 export NETWORK_LOCATION="\$(/usr/sbin/scselect 2>&1 | egrep '^ \*' | sed 's:.*(\(.*\)):\1:')" 
-if [ "\$NETWORK_LOCATION" = "RD_Wired" ] && [[ ! \$1 =~ ^127\. ]]; then
+if [ "\$NETWORK_LOCATION" = "RD_Wired" ] && [[ ! \$1 =~ ^127\. ]] && [[ ! \$1 =~ ^.*\.rd\.bbc\.co\.uk ]]; then
     nc -x "socks-gw.rd.bbc.co.uk" -X 5 \$1 \$2
 else
     nc -X 5 \$1 \$2
@@ -144,7 +144,7 @@ EOF
 
     chmod +x ~/.ssh/proxy
 
-    cat >~/.ssh/config <<EOF
+    test -f ~/.bash_profile || cat >~/.ssh/config <<EOF
 ProxyCommand ~/.ssh/proxy %h %p
 EOF
 
