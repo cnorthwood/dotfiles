@@ -135,7 +135,7 @@ if [ "$BBC" = "y" ]; then
     cat >~/.ssh/proxy <<EOF
 #!/bin/sh
 export NETWORK_LOCATION="\$(/usr/sbin/scselect 2>&1 | egrep '^ \*' | sed 's:.*(\(.*\)):\1:')" 
-if [ "\$NETWORK_LOCATION" = "RD_Wired" ]; then
+if [ "\$NETWORK_LOCATION" = "RD_Wired" ] && [[ ! $1 =~ ^127\. ]]; then
     nc -x "socks-gw.rd.bbc.co.uk" -X 5 \$1 \$2
 else
     nc -X 5 \$1 \$2
