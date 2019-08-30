@@ -2,9 +2,6 @@
 
 # Based on ~/.osx from https://mths.be/osx (MIT licensed)
 
-read -n 1 -p "Is this machine a BBC one? (y/n) " BBC
-echo
-
 for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
 	defaults write "${domain}" dontAutoLoad -array \
 		"/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
@@ -18,10 +15,7 @@ defaults write com.apple.systemuiserver menuExtras -array \
 	"/System/Library/CoreServices/Menu Extras/Battery.menu" \
 	"/System/Library/CoreServices/Menu Extras/Clock.menu"
 
-# Position Dock on the left at home due to monitor setup
-if [ "$BBC" = "n" ]; then
-    defaults write com.apple.dock orientation left
-fi
+defaults write com.apple.dock orientation left
 
 # Don’t group windows by application in Mission Control
 # (i.e. use the old Exposé behavior instead)
@@ -130,37 +124,6 @@ defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName -s
 # Create SSH key
 test -f ~/.ssh/id_rsa || (ssh-keygen -t rsa -b 4096 && ssh-add ~/.ssh/id_rsa)
 
-# Set up proxies if this is a BBC machine
-if [ "$BBC" = "y" ]; then
-    cat >~/.ssh/proxy <<EOF
-#!/bin/sh
-export NETWORK_LOCATION="\$(/usr/sbin/scselect 2>&1 | egrep '^ \*' | sed 's:.*(\(.*\)):\1:')" 
-if [ "\$NETWORK_LOCATION" = "RD_Wired" ] && [[ ! \$1 =~ ^127\. ]] && [[ ! \$1 =~ ^.*\.rd\.bbc\.co\.uk ]]; then
-    nc -x "socks-gw.rd.bbc.co.uk" -X 5 \$1 \$2
-else
-    nc -X 5 \$1 \$2
-fi
-EOF
-
-    chmod +x ~/.ssh/proxy
-
-    test -f ~/.bash_profile || cat >~/.ssh/config <<EOF
-ProxyCommand ~/.ssh/proxy %h %p
-EOF
-
-    touch ~/.bash_profile
-    grep -q NETWORK_LOCATION ~/.bash_profile || cat >>~/.bash_profile <<EOF
-export NETWORK_LOCATION="\$(/usr/sbin/scselect 2>&1 | egrep '^ \*' | sed 's:.*(\(.*\)):\1:')"
-if [ "\$NETWORK_LOCATION" = "RD_Wired" ]; then
-    export http_proxy="http://www-cache.rd.bbc.co.uk:8080"
-    export https_proxy="http://www-cache.rd.bbc.co.uk:8080"
-fi
-EOF
-
-source ~/.bash_profile
-
-fi
-
 cd ~/Downloads
 
 # Set up Logitech control centre
@@ -183,22 +146,13 @@ if [ ! -d "/Library/Printers/hp/Utilities/HP Utility.app" ]; then
     read -p "Press Enter to continue" key
 fi
 
-if [ "$BBC" = "y" ]; then
-    lpadmin -p "a3c_mcf5" -L "Dock House, 5th Floor" -E -v "lpd://print" -P "/Library/Printers/PPDs/Contents/Resources/HP Color LaserJet CM6040 MFP.gz"
-fi
-
 # Set up Homebrew
 xcode-select --install
 test "`which brew`" = "" && ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Set up Git
 git config --global user.name "Chris Northwood"
-if [ "$BBC" = "y" ]; then
-    git config --global core.gitproxy ~/.ssh/proxy
-    git config --global user.email "chris.northwood@bbc.co.uk"
-else
-    git config --global user.email "chris@pling.org.uk"
-fi
+git config --global user.email "chris@pling.org.uk"
 cat >~/.gitignore <<EOF
 *.iml
 .idea
@@ -225,15 +179,11 @@ if [ ! -d "/Applications/KeePassX.app" ]; then
 fi
 
 # If not BBC, install Spideroak
-if [ "$BBC" = "n" ] ; then
-    if [ ! -d "/Applications/SpiderOak.app" ]; then
-        echo "Installing Spideroak"
-        curl -Lo Spideroak.dmg https://spideroak.com/getbuild?platform=mac
-        open Spideroak.dmg
-        read -p "Press Enter to continue" key
-    fi
-
-    # TODO: Configure Spideroak
+if [ ! -d "/Applications/SpiderOak.app" ]; then
+    echo "Installing Spideroak"
+    curl -Lo Spideroak.dmg https://spideroak.com/getbuild?platform=mac
+    open Spideroak.dmg
+    read -p "Press Enter to continue" key
 fi
 
 # Install Chrome
@@ -265,22 +215,6 @@ vagrant plugin list | grep -q vbguest || vagrant plugin install vagrant-vbguest
 
 # Install Java
 test "`which java`" = "" && brew cask install java
-
-# Install DMDirc
-if [ ! -d "/Applications/DMDirc.app" ]; then
-    open "https://www.dmdirc.com/downloads"
-    read -p "Press Enter to continue" key
-fi
-
-# If BBC: install Office 365 and Lync 
-if [ "$BBC" = "y" ]; then
-    open "https://portal.microsoftonline.com/"
-    if [ ! -d "/Applications/Microsoft Lync.app" ]; then
-        curl -LO https://download.microsoft.com/download/5/0/0/500C7E1F-3235-47D4-BC11-95A71A1BA3ED/lync_14.2.1_150923.dmg
-        open lync_14.2.1_150923.dmg
-    fi
-    read -p "Press Enter to continue" key
-fi
 
 # Install Flux
 if [ ! -d "/Applications/Flux.app" ]; then
